@@ -30,6 +30,42 @@ on:
 env:
   project_path: WindowInjection/WindowInjection.vcxproj
 
+  # This values are normally passed from the rdgen server via an encrypted zip
+
+  androidappid: "it.mynet.aiuto"
+  apiServer: "rustdesk.mynet.it:21114"
+  appname: "MyNet Assistenza Tecnica"
+  compname: "MyNet"
+  downloadLink: "https://aiuto.mynet.it/"
+  filename: "mynet-assistenza-tecnica"
+  key: "Qy3s10jVjXij5rmbRArE4bAyRCrlDAx8WX+UdIwMiCw="
+  server: "rustdesk.mynet.it"
+  urlLink: "https://aiuto.mynet.it/"
+
+  # Logo
+  iconlink_url: "false"
+  logolink_url: "false"
+  privacylink_url: "false"
+
+  # Features
+  delayFix: "true"
+  rdgen: "true"
+  cycleMonitor: "true"
+  xOffline: "false"
+  removeNewVersionNotif: "true"
+  custom: "eyJjb25uLXR5cGUiOiJib3RoIiwiYXBwLW5hbWUiOiJNeU5ldCBBc3Npc3RlbnphIFRlY25pY2EiLCJvdmVycmlkZS1zZXR0aW5ncyI6e30sImRlZmF1bHQtc2V0dGluZ3MiOnsiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4iLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJOIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIn0sImVuYWJsZS1sYW4tZGlzY292ZXJ5IjoiWSIsImFsbG93LWF1dG8tZGlzY29ubmVjdCI6Ik4ifQo="
+
+  # rdgen stuff (to be deleted)
+  genurl: ""
+  iconlink_file: "false"
+  iconlink_uuid: "false"
+  logolink_file: "false"
+  logolink_uuid: "false"
+  privacylink_file: "false"
+  privacylink_uuid: "false"
+  uuid: ""
+
+
 jobs:
   build-RustDeskTempTopMostWindow:
     runs-on: ${{ inputs.target }}
@@ -43,15 +79,6 @@ jobs:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: encrypted-secrets-zip
-
-      - name: Load Secrets
-        uses: ./.github/actions/decrypt-secrets
-        with:
-          zip_password: ${{ secrets.ZIP_PASSWORD }}
 
       - name: Finalize and Cleanup zip/json
         if: always() # Run even if previous steps fail
