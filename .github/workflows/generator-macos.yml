@@ -49,8 +49,8 @@ env:
   urlLink: "https://aiuto.mynet.it/"
 
   # Logo
-  iconlink_url: "false"
-  logolink_url: "false"
+  iconlink_url: "https://raw.githubusercontent.com/mynetit/rustdesk-client-generator/master/img/logo.png"
+  logolink_url: "https://raw.githubusercontent.com/mynetit/rustdesk-client-generator/master/img/logo.png"
   privacylink_url: "false"
 
   # Features
@@ -60,16 +60,6 @@ env:
   xOffline: "false"
   removeNewVersionNotif: "true"
   custom: "eyJjb25uLXR5cGUiOiJib3RoIiwiYXBwLW5hbWUiOiJNeU5ldCBBc3Npc3RlbnphIFRlY25pY2EiLCJvdmVycmlkZS1zZXR0aW5ncyI6e30sImRlZmF1bHQtc2V0dGluZ3MiOnsiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4iLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJOIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIn0sImVuYWJsZS1sYW4tZGlzY292ZXJ5IjoiWSIsImFsbG93LWF1dG8tZGlzY29ubmVjdCI6Ik4ifQo="
-
-  # rdgen stuff (to be deleted)
-  genurl: ""
-  iconlink_file: "false"
-  iconlink_uuid: "false"
-  logolink_file: "false"
-  logolink_uuid: "false"
-  privacylink_file: "false"
-  privacylink_uuid: "false"
-  uuid: ""
 
 
 jobs:
@@ -107,16 +97,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Finalize and Cleanup zip/json
-        if: always() # Run even if previous steps fail
-        continue-on-error: true
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: "${{ secrets.GENURL }}/cleanzip"
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}"}'
 
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v6
@@ -303,8 +283,8 @@ jobs:
           # Download icon using curl with additional SSL options
           curl -k -L --tlsv1.2 --proto =https --ssl-reqd \
             -H "User-Agent: Mozilla/5.0" \
-            "${{ env.iconlink_url }}/get_png?filename=${{ env.iconlink_file }}&uuid=${{ env.iconlink_uuid }}" \
-            -o ./res/icon.png || wget --no-check-certificate -O ./res/icon.png "${{ env.iconlink_url }}/get_png?filename=${{ env.iconlink_file }}&uuid=${{ env.iconlink_uuid }}"
+            "${{ env.iconlink_url }}" \
+            -o ./res/icon.png || wget --no-check-certificate -O ./res/icon.png "${{ env.iconlink_url }}"
 
           # Backup existing files (if they exist)
           [ -f "./res/32x32.png" ] && mv ./res/32x32.png ./res/32x32.png.bak
@@ -572,11 +552,11 @@ jobs:
           mkdir -p "$ASSETS_DIR"
           curl -k -L --tlsv1.2 --proto =https --ssl-reqd \
             -H "User-Agent: Mozilla/5.0" \
-            "${{ env.logolink_url }}/get_png?filename=${{ env.logolink_file }}&uuid=${{ env.logolink_uuid }}" \
+            "${{ env.logolink_url }}" \
             -o "$ASSETS_DIR/logo.png" || \
           wget --no-check-certificate \
             -O "$ASSETS_DIR/logo.png" \
-            "${{ env.logolink_url }}/get_png?filename=${{ env.logolink_file }}&uuid=${{ env.logolink_uuid }}"
+            "${{ env.logolink_url }}"
 
       - name: Sign macOS app bundle
         if: env.MACOS_P12_BASE64 != ''
@@ -683,24 +663,10 @@ jobs:
             exit 1
           fi
 
-      - name: send file to rdgen server
-        if: ${{ env.rdgen == 'true' }}
-        shell: bash
-        run: |
-          curl -i -X POST \
-            -H "Content-Type: multipart/form-data" \
-            -H "Authorization: Bearer ${{ env.token }}" \
-            -F "file=@$GITHUB_WORKSPACE/${{ env.filename }}-${{ matrix.job.arch }}.dmg" \
-            -F "uuid=${{ env.uuid }}" \
-            "${{ secrets.GENURL }}/save_custom_client"
-
-
-      - name: send file to api server
-        if: ${{ env.rdgen == 'false' }}
-        shell: bash
-        run: |
-          curl -i -X POST \
-            -H "Content-Type: multipart/form-data" \
-            -H "Authorization: Bearer ${{ env.token }}" \
-            -F "file=@$GITHUB_WORKSPACE/${{ env.filename }}-${{ matrix.job.arch }}.dmg" \
-            "${{ env.apiServer }}/api/save_custom_client"
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.VERSION }}
+          prerelease: true
+          files: |
+            ${{ env.filename }}-${{ matrix.job.arch }}.dmg
