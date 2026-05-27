@@ -9,6 +9,11 @@ on:
         required: true
         default: '1.4.6'
         type: string
+      patch:
+        description: 'Patch number'
+        required: false
+        default: '1'
+        type: string
 
 
 env:
@@ -29,6 +34,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
+  FULL_VERSION: "${{ inputs.version }}-${{ inputs.patch }}"
   NDK_VERSION: "r27c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
@@ -663,10 +669,16 @@ jobs:
             exit 1
           fi
 
+      - name: Rename release artifacts
+        if: env.UPLOAD_ARTIFACT == 'true'
+        run: |
+          cp $GITHUB_WORKSPACE/${{ env.filename }}-${{ matrix.job.arch }}.dmg \
+             $GITHUB_WORKSPACE/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.dmg
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ${{ env.filename }}-${{ matrix.job.arch }}.dmg
+            ${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.dmg

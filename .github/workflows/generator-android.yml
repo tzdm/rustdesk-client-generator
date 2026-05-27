@@ -9,6 +9,11 @@ on:
         required: true
         default: '1.4.6'
         type: string
+      patch:
+        description: 'Patch number'
+        required: false
+        default: '1'
+        type: string
 
 
 env:
@@ -28,6 +33,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
+  FULL_VERSION: "${{ inputs.version }}-${{ inputs.patch }}"
   NDK_VERSION: "r27c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
@@ -548,13 +554,18 @@ jobs:
           # override default build-tools version (29.0.3) -- optional
           BUILD_TOOLS_VERSION: "30.0.2"
 
+      - name: Rename release artifacts
+        run: |
+          cp ./signed-apk/${{ env.filename }}-${{ matrix.job.arch }}.apk \
+             ./signed-apk/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.apk || true
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ./signed-apk/${{ env.filename }}-${{ matrix.job.arch }}.apk
+            ./signed-apk/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.apk
 
   deploy:
     needs: [build-rustdesk-android]

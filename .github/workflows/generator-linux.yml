@@ -9,6 +9,11 @@ on:
         required: true
         default: '1.4.6'
         type: string
+      patch:
+        description: 'Patch number'
+        required: false
+        default: '1'
+        type: string
 
 
 env:
@@ -29,6 +34,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
+  FULL_VERSION: "${{ inputs.version }}-${{ inputs.patch }}"
   NDK_VERSION: "r27c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
@@ -599,16 +605,24 @@ jobs:
         run: |
           cp ./res/rustdesk-${{ env.VERSION }}-0-x86_64.pkg.tar.zst ./output/${{ env.filename }}-${{ matrix.job.arch }}.pkg.tar.zst
 
+      - name: Rename release artifacts
+        run: |
+          cd ./output
+          [ -f "${{ env.filename }}-${{ matrix.job.arch }}.deb" ] && cp "${{ env.filename }}-${{ matrix.job.arch }}.deb" "${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.deb" || true
+          [ -f "${{ env.filename }}-${{ matrix.job.arch }}.rpm" ] && cp "${{ env.filename }}-${{ matrix.job.arch }}.rpm" "${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.rpm" || true
+          [ -f "${{ env.filename }}-suse-${{ matrix.job.arch }}.rpm" ] && cp "${{ env.filename }}-suse-${{ matrix.job.arch }}.rpm" "${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}-suse.rpm" || true
+          [ -f "${{ env.filename }}-${{ matrix.job.arch }}.pkg.tar.zst" ] && cp "${{ env.filename }}-${{ matrix.job.arch }}.pkg.tar.zst" "${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.pkg.tar.zst" || true
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ./output/${{ env.filename }}-${{ matrix.job.arch }}.deb
-            ./output/${{ env.filename }}-${{ matrix.job.arch }}.rpm
-            ./output/${{ env.filename }}-suse-${{ matrix.job.arch }}.rpm
-            ./output/${{ env.filename }}-${{ matrix.job.arch }}.pkg.tar.zst
+            ./output/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.deb
+            ./output/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.rpm
+            ./output/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}-suse.rpm
+            ./output/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.pkg.tar.zst
 
       - name: Upload deb
         uses: actions/upload-artifact@master
@@ -707,13 +721,19 @@ jobs:
           sudo appimage-builder --skip-tests --recipe ./AppImageBuilder-${{ matrix.job.arch }}.yml
           sudo mv ./${{ env.filename }}-${{ env.VERSION }}-${{ matrix.job.arch }}.AppImage ./${{ env.filename }}-${{ matrix.job.arch }}.AppImage
 
+      - name: Rename release artifacts
+        continue-on-error: true
+        run: |
+          sudo cp ./appimage/${{ env.filename }}-${{ matrix.job.arch }}.AppImage \
+                  ./appimage/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.AppImage
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ./appimage/${{ env.filename }}-${{ matrix.job.arch }}.AppImage
+            ./appimage/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.AppImage
 
   build-flatpak:
     name: Build flatpak ${{ matrix.job.target }}${{ matrix.job.suffix }}
@@ -797,13 +817,19 @@ jobs:
             flatpak-builder --user --install-deps-from=flathub -y --force-clean --repo=repo ./build ./rustdesk.json
             flatpak build-bundle ./repo ${{ env.filename }}-${{ matrix.job.arch }}.flatpak com.rustdesk.RustDesk
 
+      - name: Rename release artifacts
+        continue-on-error: true
+        run: |
+          cp ./flatpak/${{ env.filename }}-${{ matrix.job.arch }}.flatpak \
+             ./flatpak/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.flatpak
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ./flatpak/${{ env.filename }}-${{ matrix.job.arch }}.flatpak
+            ./flatpak/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.flatpak
 
   deploy:
     needs: [build-rustdesk-linux,build-flatpak,build-appimage]

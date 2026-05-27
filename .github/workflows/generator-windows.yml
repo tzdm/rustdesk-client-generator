@@ -9,6 +9,11 @@ on:
         required: true
         default: '1.4.6'
         type: string
+      patch:
+        description: 'Patch number'
+        required: false
+        default: '1'
+        type: string
 
 
 env:
@@ -28,6 +33,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
+  FULL_VERSION: "${{ inputs.version }}-${{ inputs.patch }}"
   NDK_VERSION: "r27c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
@@ -590,11 +596,19 @@ jobs:
         run: |
           mv ./SignOutput/rustdesk.msi "./SignOutput/${{ env.filename }}.msi" || echo "rustdesk"
 
+      - name: Rename release artifacts
+        shell: bash
+        run: |
+          cp "./SignOutput/${{ env.filename }}.exe" \
+             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.exe" || true
+          cp "./SignOutput/${{ env.filename }}.msi" \
+             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.msi" || true
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.VERSION }}
+          tag_name: ${{ env.FULL_VERSION }}
           prerelease: true
           files: |
-            ./SignOutput/${{ env.filename }}.exe
-            ./SignOutput/${{ env.filename }}.msi
+            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.exe
+            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.msi
