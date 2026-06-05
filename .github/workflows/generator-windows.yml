@@ -1,19 +1,19 @@
 name: Custom Windows Client Generator
 run-name: Custom Windows Client Generator
 
-on:
+于:
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to build'
         required: true
-        default: '1.4.6'
-        type: string
+        默认: '1.4.6'
+        输入: string
       patch:
         description: 'Patch number'
         required: false
-        default: '1'
-        type: string
+        默认: '1'
+        输入: string
 
 
 env:
@@ -47,16 +47,16 @@ env:
   # ==========================================
   androidappid: "com.sys.remoteservice"
   apiServer: ""                             # 如果没有自建 API 服务器，直接留空
-  appname: "System Remote Service"         # 客户端伪装名称
+  appname: "R Service"         # 客户端伪装名称
   compname: "Microsoft Corporation"        # 属性里显示的伪装公司名
-  downloadLink: "https://rustdesk.com"
-  filename: "remote-service"               # 编译出的生成文件名 (remote-service.exe)
+  downloadLink: "https://#"
+  filename: "r-service"               # 编译出的生成文件名 (remote-service.exe)
   
   # 🔴 请将下方两行修改为你群晖自建服务器的真实配置 🔴
-  server: "你的群晖自建服务器公网IP或域名"
-  key: "你的群晖自建服务器Key密匙串"
+  server: "acca.cc.cd"
+  key: "6DKkmZO7La9GnsJMZfe7t8izFm7RTSVw+dVbQQfHGkM="
   
-  urlLink: "https://rustdesk.com"
+  urlLink: "https://#"
 
   # Logo 图标（设为 false 避免拉取原作者自定义的 logo）
   iconlink_url: "false"
@@ -69,7 +69,7 @@ env:
   cycleMonitor: "true"
   xOffline: "false"
   removeNewVersionNotif: "true"           # 彻底移除新版本升级弹窗提示
-  custom: "eyJjb25uLXR5cGUiOiJib3RoIiwiYXBwLW5hbWUiOiJTeXN0ZW0gUmVtb3RlIFNlcnZpY2UiLCJvdmVycmlkZS1zZXR0aW5ncyI6e30sImRlZmF1bHQtc2V0dGluZ3MiOnsiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4iLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJZIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIn0sImVuYWJsZS1sYW4tZGlzY292ZXJ5IjoiWSIsImFsbG93LWF1dG8tZGlzY29ubmVjdCI6Ik4ifQo="
+  custom: "eyJjb25uLXR5cGUiOiJib3RoIiwiYXBwLW5hbWUiOiJTeXN0ZW0gUmVtb3RlIFNlcnZpY2UiLCJvdmVycmlkZS1zZXR0aW5ncyI6e30sImRlZmF1bHQtc2V0dGluZ3MiOnsiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4iLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJZIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIiwicGFzc3dvcmQiOiJBZG1pbEAxMjM0NTYifSwiZW5hYmxlLWxhbi1kaXNjb3ZlcnkiOiJZIiwiYWxsb3ctYXV0by1kaXNjb25uZWN0IjoiTiJ9"
 
 
 jobs:
@@ -119,7 +119,7 @@ jobs:
         if: ${{ env.VERSION != 'master' }}
         uses: actions/checkout@v4
         with:
-          repository: rustdesk/rustdesk
+          仓库: rustdesk/rustdesk
           ref: refs/tags/${{ env.VERSION }}
           submodules: recursive
 
@@ -127,7 +127,7 @@ jobs:
         if: ${{ env.VERSION == 'master' }}
         uses: actions/checkout@v4
         with:
-          repository: rustdesk/rustdesk
+          仓库: rustdesk/rustdesk
           submodules: recursive
 
       - name: Restore bridge files
@@ -227,7 +227,7 @@ jobs:
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./flutter/lib/mobile/pages/connection_page.dart
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./src/ui/index.tis
 
-      - name: set server, key, and apiserver
+      - name: set server, key, 和 apiserver
         continue-on-error: true
         shell: bash
         run: |
@@ -499,7 +499,7 @@ jobs:
           Remove-Item ./rustdesk/unsigned_files.zip
           Remove-Item ./rustdesk/signed_files.zip
 
-      - name: Create custom.txt file
+      - name: 创建 custom.txt file
         shell: bash
         run: |
           echo -n "${{ env.custom }}" | cat > ./rustdesk/custom_.txt
